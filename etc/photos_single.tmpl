@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<meta http-equiv="Content-Language" content="en" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title><!-- TMPL_VAR name="title" --></title>
+	<style type="text/css">
+body {
+	font-family: Arial, sans-serif;
+	font-size: small;
+	background: #f0f0f0;
+}
+
+#contentwrapper {
+	width: 755px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+h1 {
+	font-size: x-large;
+	background: #555;
+	color: #fff;
+	padding: 5px;
+	margin: 3px;
+}
+
+#header {
+	background: #fff;
+	border: 1px solid #b0b0b0;
+}
+
+h2 {
+	font-size: large;
+	padding: 3px;
+	border-bottom: 1px dotted #b0b0b0;
+}
+
+.title {
+	text-align: right;
+}
+
+#footer {
+	border-top: 1px solid #b0b0b0;
+}
+
+#footer p {
+	text-align: right;
+	font-size: small;
+	font-weight: bold;
+	color: #555;
+	padding: 5px;
+	margin: 3px;
+}
+
+#footer a {
+	text-decoration: none;
+	color: #6f6f6f;
+}
+
+.photo {
+	text-align: center;
+	margin-bottom: 1em;
+}
+
+.photo img {
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 3px;
+}
+
+.caption {
+	border-top: 1px dotted #b0b0b0;
+	text-align: center;
+	padding-top: 1em;
+}
+	</style>
+</head>
+<body>
+<div id="contentwrapper">
+	<div id="header">
+		<h1><!-- TMPL_VAR name="title" --></h1>
+	</div>
+	<h2 class="title"><!-- TMPL_VAR name="photo" --></h2>
+	<div class="photo">
+	<img src="<!-- TMPL_VAR name="script_name" -->?mode=full&photo=<!-- TMPL_VAR name="photo" -->" width="<!-- TMPL_VAR name="width" -->" height="<!-- TMPL_VAR name="height" -->" />
+	</div>
+	<!-- TMPL_IF name="caption" -->
+	<p class="caption"><!-- TMPL_VAR name="caption" --></p>
+	<!-- /TMPL_IF -->
+	<div id="footer">
+		<p>Powered by <a href="http://search.cpan.org/dist/CGI-Application-PhotoGallery/">CGI::Application::PhotoGallery</a></p>
+	</div>
+</div>
+</body>
+</html>

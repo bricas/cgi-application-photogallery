@@ -1,0 +1,48 @@
+Revision history for Perl extension PhotoGallery.
+
+0.06  Wed Sep 14 2005
+	- fixed removal of relative url-specified paths
+
+0.05  Tue Sep 13 2005
+	- changed Mime::Types to MIME::Types (closes RT #14564)
+
+0.04  Thu Sep 08 2005
+	- added pod_coverage.t
+	- major refactoring
+	- last-modified date used to ensure http caching
+	- new (table-less) templates
+
+	[INCOMPATIBLE CHANGES]
+	- new caching scheme
+	- you are now allowed to have photos in your photos_dir
+	- galleries can have sub-galleries
+	- no more thumbs_per_row
+	- no more extensions (mime types are detected)
+	- script_name not mandatory
+	- thumb_size is now numeric (default 100)
+	- s/image/photo/ in the urls
+	- captions are now stored in captions.txt right off of your
+	  photos_dir
+
+0.03  Fri Jan 14 2005
+	- Re-organized the distro
+	- updated pod (closes RT #8805)
+	- added pod test
+
+0.02  Wed May 14 19:30:23 2003
+
+	Thanks to Mark Stosberg and Michael Heathman for their input
+
+	- Code cleanup
+	- Changed runmode names (full, english names)
+	- thumbnail size no longer specified in URL
+	- You can use either GD or Image::Magick (or you can write
+	  your own interface)
+	- You can specify what extensions to read
+	- Crude thumbnail cache implemented
+	- $0 was doing funky stuff on Win32; it's been fixed
+
+0.01  Mon Sep  9 21:02:56 2002
+	- original version; created by h2xs 1.21 with options
+		-AX PhotoGallery
+
