@@ -6,10 +6,10 @@ CGI::Application::PhotoGallery::GD - GD-based graphics adaptor
 
 =head1 SYNOPSIS
 
-	use CGI::Application::PhotoGallery::GD;
-	
-	my $lib     = CGI::Application::PhotoGallery::GD->new;
-	my $pngdata = $lib->resize( $file, 100 );
+    use CGI::Application::PhotoGallery::GD;
+    
+    my $lib     = CGI::Application::PhotoGallery::GD->new;
+    my $pngdata = $lib->resize( $file, 100 );
 
 =head1 METHODS
 
@@ -27,10 +27,10 @@ creates a new CGI::Application::PhotoGallery::GD object.
 =cut
 
 sub new {
-	my $class = shift;
-	my $self  = {};
-	bless $self, $class;
-	return $self;
+    my $class = shift;
+    my $self  = {};
+    bless $self, $class;
+    return $self;
 }
 
 =head2 resize( $file, $size )
@@ -40,34 +40,34 @@ Resizes C<$file> to C<$size>xC<$size> with transparent margins.
 =cut
 
 sub resize {
-	my $self  = shift;
-	my $file  = shift;
-	my $size  = shift;
+    my $self = shift;
+    my $file = shift;
+    my $size = shift;
 
-	my $image = $self->load( $file );
+    my $image = $self->load( $file );
 
-	my ( $width, $height ) = $image->getBounds();
+    my ( $width, $height ) = $image->getBounds();
 
-	my $image2 = new GD::Image( $size, $size );
+    my $image2 = new GD::Image( $size, $size );
 
-	$image2->transparent( $image2->colorAllocate( 0, 0, 0 ) );
+    $image2->transparent( $image2->colorAllocate( 0, 0, 0 ) );
 
-	my $hnw = int( ( $height * $size / $width ) + 0.5 );
-	my $wnh = int( ( $width * $size / $height ) + 0.5 );
+    my $hnw = int( ( $height * $size / $width ) + 0.5 );
+    my $wnh = int( ( $width * $size / $height ) + 0.5 );
 
-	my @arg = ( $image, 0, 0, 0, 0, $size, $size, $width, $height );
+    my @arg = ( $image, 0, 0, 0, 0, $size, $size, $width, $height );
 
-	if ( $width > $height ) {
-		$arg[ 2 ]    = int( ( $size - $hnw ) / 2 + 0.5 );
-		@arg[ 5, 6 ] = ( $size, $hnw );
-	}
-	elsif ( $width < $height ) {
-		$arg[ 1 ]    = int( ( $size - $wnh ) / 2 + 0.5 );
-		@arg[ 5, 6 ] = ( $wnh, $size );
-	}
+    if ( $width > $height ) {
+        $arg[ 2 ] = int( ( $size - $hnw ) / 2 + 0.5 );
+        @arg[ 5, 6 ] = ( $size, $hnw );
+    }
+    elsif ( $width < $height ) {
+        $arg[ 1 ] = int( ( $size - $wnh ) / 2 + 0.5 );
+        @arg[ 5, 6 ] = ( $wnh, $size );
+    }
 
-	$image2->copyResized( @arg );
-	return $image2->png;
+    $image2->copyResized( @arg );
+    return $image2->png;
 }
 
 =head2 load( $file )
@@ -77,25 +77,25 @@ Loads C<$file> and returns a L<GD::Image>.
 =cut
 
 sub load {
-	my $self = shift;
-	my $file = shift;
+    my $self = shift;
+    my $file = shift;
 
-	my $image;
-	if ($GD::VERSION < 1.30) {
-		my( $path, $type ) = $file =~ /(.*)\.([^.]+)/;
-		my %new = (
-			gif => 'newFromGif',
-			png => 'newFromPng',
-			jpg => 'newFromJpeg'
-		);
-		my $new = $new{ lc( $type ) };
-		$image = GD::Image->$new( $file );
-	}
-	else {
-		$image = GD::Image->new( $file );
-	}
+    my $image;
+    if ( $GD::VERSION < 1.30 ) {
+        my ( $path, $type ) = $file =~ /(.*)\.([^.]+)/;
+        my %new = (
+            gif => 'newFromGif',
+            png => 'newFromPng',
+            jpg => 'newFromJpeg'
+        );
+        my $new = $new{ lc( $type ) };
+        $image = GD::Image->$new( $file );
+    }
+    else {
+        $image = GD::Image->new( $file );
+    }
 
-	return $image;
+    return $image;
 }
 
 =head2 size( $file )
@@ -105,12 +105,12 @@ Returns the width and height of C<$file>.
 =cut
 
 sub size {
-	my $self  = shift;
-	my $file  = shift;
+    my $self = shift;
+    my $file = shift;
 
-	my $image = $self->load( $file );
+    my $image = $self->load( $file );
 
-	return $image->getBounds();
+    return $image->getBounds();
 }
 
 =head1 SEE ALSO

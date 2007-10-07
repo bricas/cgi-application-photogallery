@@ -6,10 +6,10 @@ CGI::Application::PhotoGallery::Magick - Image::Magick-based graphics adaptor
 
 =head1 SYNOPSIS
 
-	use CGI::Application::PhotoGallery::Magick;
-	
-	my $lib     = CGI::Application::PhotoGallery::Magick->new;
-	my $pngdata = $lib->resize( $file, 100 );
+    use CGI::Application::PhotoGallery::Magick;
+    
+    my $lib     = CGI::Application::PhotoGallery::Magick->new;
+    my $pngdata = $lib->resize( $file, 100 );
 
 =head1 METHODS
 
@@ -27,10 +27,10 @@ creates a new CGI::Application::PhotoGallery::Magick object.
 =cut
 
 sub new {
-	my $class = shift;
-	my $self  = {};
-	bless $self, $class;
-	return $self;
+    my $class = shift;
+    my $self  = {};
+    bless $self, $class;
+    return $self;
 }
 
 =head2 resize( $file, $size )
@@ -40,15 +40,15 @@ Resizes C<$file> to C<$size>xC<$size> with transparent margins.
 =cut
 
 sub resize {
-	my $self  = shift;
-	my $file  = shift;
-	my $size  = shift;
+    my $self = shift;
+    my $file = shift;
+    my $size = shift;
 
-	my $image = $self->load( $file );
+    my $image = $self->load( $file );
 
-	$image->Scale( Geometry => $size . "x$size" );
+    $image->Scale( Geometry => $size . "x$size" );
 
-	return $image->ImageToBlob( magick => 'png' );
+    return $image->ImageToBlob( magick => 'png' );
 }
 
 =head2 load( $file )
@@ -58,14 +58,14 @@ Loads C<$file> and returns a L<GD::Image>.
 =cut
 
 sub load {
-	my $self  = shift;
-	my $file  = shift;
+    my $self = shift;
+    my $file = shift;
 
-	my $image = Image::Magick->new;
+    my $image = Image::Magick->new;
 
-	$image->Read( $file );
+    $image->Read( $file );
 
-	return $image;
+    return $image;
 }
 
 =head2 size( $file )
@@ -75,12 +75,12 @@ Returns the width and height of C<$file>.
 =cut
 
 sub size {
-	my $self  = shift;
-	my $file  = shift;
+    my $self = shift;
+    my $file = shift;
 
-	my $image = $self->load( $file );
+    my $image = $self->load( $file );
 
-	return $image->Get( 'width', 'height' );
+    return $image->Get( 'width', 'height' );
 }
 
 =head1 SEE ALSO
