@@ -8,7 +8,7 @@ name 'CGI-Application-PhotoGallery';
 all_from 'lib/CGI/Application/PhotoGallery.pm';
 
 requires 'File::Basename';
-requires 'CGI::Application'
+requires 'CGI::Application';
 requires 'Cache::FileCache';
 requires 'MIME::Types';
 requires 'File::Find::Rule';
@@ -21,7 +21,7 @@ feature 'GD Support',
     'GD';
 
 feature 'Image::Magick Support',
-    -default => 1,
+    -default => 0,
     'Image::Magick';
 
 auto_install;
