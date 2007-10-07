@@ -4,6 +4,7 @@ Revision history for Perl extension PhotoGallery.
     - switched to Module::Install
     - handle undef returns from MIME::Types (Alexander Becker)
     - using File::ShareDir for default templates
+    - synchronize all version numbers
 
 0.06  Wed Sep 14 2005
     - fixed removal of relative url-specified paths

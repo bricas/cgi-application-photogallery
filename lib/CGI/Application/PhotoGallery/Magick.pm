@@ -18,7 +18,7 @@ CGI::Application::PhotoGallery::Magick - Image::Magick-based graphics adaptor
 use strict;
 use Image::Magick;
 
-our $VERSION = '0.02';
+our $VERSION = '0.07';
 
 =head2 new( )
 
@@ -93,11 +93,7 @@ sub size {
 
 =head1 AUTHOR
 
-=over 4
-
-=item * Brian Cassidy E<lt>bricas@cpan.orgE<gt>
-
-=back
+Brian Cassidy E<lt>bricas@cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
