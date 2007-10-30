@@ -16,9 +16,11 @@ CGI::Application::PhotoGallery::GD - GD-based graphics adaptor
 =cut
 
 use strict;
+use warnings;
+
 use GD;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head2 new( )
 
