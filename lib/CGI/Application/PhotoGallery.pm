@@ -154,8 +154,9 @@ use Cache::FileCache;
 use MIME::Types;
 use File::Find::Rule;
 use File::ShareDir;
+use HTTP::Date ();
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head2 setup( )
 
@@ -367,9 +368,15 @@ sub thumbnail {
 
     my $data;
     if ( $data = $cache->get( $key ) ) {
-        my $reqmod = $query->http( 'If-Modified-Since' ) || 0;
+        my $reqmod;
+        if ( my $header = $query->http( 'If-Modified-Since' ) ) {
+            $reqmod
+                = HTTP::Date::str2time(
+                ( split( /;/, $query->http( 'If-Modified-Since' ), 2 ) )[ 0 ]
+                );
+        }
 
-        if ( $reqmod == $lastmod ) {
+        if ( $reqmod && $reqmod == $lastmod ) {
             $self->header_props( { -status => '304 Not Modified' } );
             return;
         }
@@ -410,9 +417,14 @@ sub show_image {
     die 'ERROR: Missing $photo query argument.' unless $photo;
 
     my $lastmod = ( stat( $path ) )[ 9 ];
-    my $reqmod = $query->http( 'If-Modified-Since' ) || 0;
 
-    if ( $reqmod == $lastmod ) {
+    my $reqmod;
+    if ( my $header = $query->http( 'If-Modified-Since' ) ) {
+        $reqmod = HTTP::Date::str2time(
+            ( split( /;/, $query->http( 'If-Modified-Since' ), 2 ) )[ 0 ] );
+    }
+
+    if ( $reqmod && $reqmod == $lastmod ) {
         $self->header_props( { -status => '304 Not Modified' } );
         return;
     }
@@ -424,7 +436,7 @@ sub show_image {
 
     $self->header_props(
         {   -type          => $self->mime_types->mimeTypeOf( $path ),
-            -last_modified => $lastmod
+            -last_modified => HTTP::Date::time2str( $lastmod )
         }
     );
 
@@ -483,7 +495,7 @@ sub single_index {
 }
 
 sub _dist_file {
-    my( $self, $file ) = @_;
+    my ( $self, $file ) = @_;
     return File::ShareDir::dist_file( 'CGI-Application-PhotoGallery', $file );
 }
 
