@@ -1,6 +1,6 @@
 Revision history for Perl extension PhotoGallery.
 
-0.08  Mon Oct 29 2007
+0.08  Mon Nov 05 2007
     - use HTTP::Date to parse If-Modified-Since header RT #30317
 
 0.07  Sat Oct 06 2007
