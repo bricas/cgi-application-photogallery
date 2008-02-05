@@ -12,7 +12,7 @@ CGI::Application::PhotoGallery - module to provide a simple photo gallery
         PARAMS => {
             photos_dir  => '/path/to/photos'
         }
-        );
+    );
     
     $webapp->run();
 
@@ -34,7 +34,7 @@ should look like:
         PARAMS => {
             photos_dir  => '/path/to/photos'
         }
-        );
+    );
     
     $webapp->run();
 
@@ -131,6 +131,13 @@ your custom template as the value of this parameter.
 
 See L<HTML::Template> for more information about the template syntax.
 
+=head2 max_width
+
+Setting this value will force the browser to scale images down to this
+particular width and proportioned height. This is done by setting the width
+and height attributes on the image tag, thus saving the image will retain the
+full resolution.
+
 =head1 CAPTIONS
 
 You can include captions for your photos by creating a tab-separated
@@ -156,7 +163,7 @@ use File::Find::Rule;
 use File::ShareDir;
 use HTTP::Date ();
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head2 setup( )
 
@@ -215,7 +222,7 @@ sub get_photos {
     my $dir   = shift;
     my $types = $self->mime_types;
 
-    my @photos = File::Find::Rule->maxdepth( 1 )->file->exec(
+    my @photos = sort File::Find::Rule->maxdepth( 1 )->file->exec(
         sub {
             my $name = pop;
             my $mime = $types->mimeTypeOf( $name );
@@ -302,15 +309,18 @@ sub gallery_index {
     $user_dir =~ s/\/$//;
 
     my $directory = $photo_dir . $user_dir;
+    die "'$directory' is not a directory" unless -d $directory;
 
-    my @dirs = File::Find::Rule->directory->maxdepth( 1 )->in( $directory );
+    my @dirs = sort File::Find::Rule->directory->mindepth( 1 )->maxdepth( 1 )
+        ->in( $directory );
 
     my @galleries;
-    for my $dir ( @dirs ) {
+    for my $dir ( $directory, @dirs ) {
         my @files = map { s/^$photo_dir//; { filename => $_ }; }
             $self->get_photos( $dir );
 
-        if ( $dir ne $dirs[ 0 ] ) {
+        # only limit the number of photos on sub-galleries
+        if ( $dir ne $directory ) {
             @files = @files[ 0 .. $limit - 1 ] if @files > $limit;
         }
 
@@ -320,8 +330,7 @@ sub gallery_index {
             dir    => $location,
             title  => basename( $dir ),
             photos => \@files
-            }
-            if @files;
+            };
     }
 
     my $current = shift( @galleries );
@@ -470,6 +479,14 @@ sub single_index {
         die_on_bad_params => 0
 
     );
+
+    if ( defined( my $max_width = $self->param( 'max_width' ) ) ) {
+        if ( $width > $max_width ) {
+            my $scale = $max_width / $width;
+            $width  = int( $width * $scale );
+            $height = int( $height * $scale );
+        }
+    }
 
     $html->param(
         photo  => $photo,

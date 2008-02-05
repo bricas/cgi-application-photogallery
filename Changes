@@ -1,7 +1,15 @@
 Revision history for Perl extension PhotoGallery.
 
+0.09  Tue Feb 05 2008
+    - sort dirs and files (RT #30317)
+    - leave empty dirs in the list of galleries in case they have sub-galleries
+      with photos (RT #30317)
+    - added a max_width option to limit the width of the image in the browser
+      (RT #30322)
+    - fix up photo_single.tmpl to break the image out of the 755px container
+
 0.08  Mon Nov 05 2007
-    - use HTTP::Date to parse If-Modified-Since header RT #30317
+    - use HTTP::Date to parse If-Modified-Since header (RT #30317)
 
 0.07  Sat Oct 06 2007
     - switched to Module::Install
