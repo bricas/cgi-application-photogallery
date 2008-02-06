@@ -1,5 +1,8 @@
 Revision history for Perl extension PhotoGallery.
 
+0.10  Wed Feb 06 2008
+    - added HTTP::Date to deps
+
 0.09  Tue Feb 05 2008
     - sort dirs and files (RT #30317)
     - leave empty dirs in the list of galleries in case they have sub-galleries

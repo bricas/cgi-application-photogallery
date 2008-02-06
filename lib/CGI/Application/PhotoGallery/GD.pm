@@ -20,7 +20,7 @@ use warnings;
 
 use GD;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head2 new( )
 

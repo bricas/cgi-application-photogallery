@@ -13,6 +13,7 @@ requires 'Cache::FileCache';
 requires 'MIME::Types';
 requires 'File::Find::Rule';
 requires 'File::ShareDir';
+requires 'HTTP::Date';
 
 test_requires 'Test::More';
 
