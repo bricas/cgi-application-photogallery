@@ -84,7 +84,7 @@ h2 {
     <h2 class="title"><!-- TMPL_VAR name="photo" --></h2>
 </div>
     <div class="photo">
-    <img src="<!-- TMPL_VAR name="script_name" -->?mode=full&photo=<!-- TMPL_VAR name="photo" -->" width="<!-- TMPL_VAR name="width" -->" height="<!-- TMPL_VAR name="height" -->" />
+    <img src="<!-- TMPL_VAR name="script_name" -->?mode=full&photo=<!-- TMPL_VAR name="photo" ESCAPE="URL" -->" width="<!-- TMPL_VAR name="width" -->" height="<!-- TMPL_VAR name="height" -->" />
     </div>
     <!-- TMPL_IF name="caption" -->
     <p class="caption"><!-- TMPL_VAR name="caption" --></p>
