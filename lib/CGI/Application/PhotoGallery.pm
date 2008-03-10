@@ -308,6 +308,9 @@ sub gallery_index {
     $user_dir =~ s/\.\.//g;
     $user_dir =~ s/\/$//;
 
+    my $parent = $user_dir;
+    $parent =~ s{^(.*?)/([^/]+?)/?$}{$1/};
+
     my $directory = $photo_dir . $user_dir;
     die "'$directory' is not a directory" unless -d $directory;
 
@@ -348,7 +351,8 @@ sub gallery_index {
         photos => $current->{ photos },
         gallery_name =>
             ( $user_dir ? $current->{ title } : $self->param( 'title' ) ),
-        galleries => \@galleries
+        galleries => \@galleries,
+        parent    => $parent,
     );
 
     return $html->output;
@@ -471,6 +475,26 @@ sub single_index {
 
     my ( $width, $height ) = $gfx->size( $path );
 
+    # get data for prev/next/parent links
+    my( undef, $search_dir ) = fileparse( $path );
+    my( undef, $parent ) = fileparse( $photo );
+    my @files = $self->get_photos( $search_dir );
+    my( $prev, $next );
+
+    while( my $f = shift @files ) {
+        $f =~ s{^$dir}{};
+        if( $f ne $photo ) {
+            $prev = $f;
+            next;
+        }
+        else {
+            $next = shift @files;
+            $next =~ s{^$dir}{};
+            last;
+        }
+    }
+    
+
     my $html = $self->load_tmpl(
         $self->param( 'single_template' )
             || $self->_dist_file( 'photos_single.tmpl' ),
@@ -491,7 +515,10 @@ sub single_index {
     $html->param(
         photo  => $photo,
         width  => $width,
-        height => $height
+        height => $height,
+        next   => $next,
+        prev   => $prev,
+        parent => $parent,
     );
 
     # get caption, if available

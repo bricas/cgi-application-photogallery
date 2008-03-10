@@ -74,6 +74,23 @@ h2 {
     text-align: center;
     padding-top: 1em;
 }
+
+.nav {
+    background: #fff;
+    padding: 3px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 1em;
+}
+
+.nav ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.nav li {
+    float: left;
+}
     </style>
 </head>
 <body>
@@ -90,6 +107,22 @@ h2 {
     <p class="caption"><!-- TMPL_VAR name="caption" --></p>
     <!-- /TMPL_IF -->
 <div class="contentwrapper">
+    <div class="nav">
+    <ul>
+    <!-- TMPL_IF name="prev" -->
+        <li style="width: 32%;"><a href="<!-- TMPL_VAR name="script_name" -->?mode=view&amp;photo=<!-- TMPL_VAR NAME="prev" ESCAPE="URL" -->">Prev</a></li>
+    <!-- TMPL_ELSE -->
+        <li style="width: 32%;">Prev</li>
+    <!-- /TMPL_IF -->
+        <li style="text-align: center; width: 34%; margin-left: 1%; margin-right: 1%;"><a href="<!-- TMPL_VAR name="script_name" -->?dir=<!-- TMPL_VAR NAME="parent" ESCAPE="URL" -->">Back to gallery</a></li>
+    <!-- TMPL_IF name="next" -->
+        <li style="width: 32%; text-align: right;"><a href="<!-- TMPL_VAR name="script_name" -->?mode=view&amp;photo=<!-- TMPL_VAR NAME="next" ESCAPE="URL" -->">Next</a></li>
+    <!-- TMPL_ELSE -->
+        <li style="width: 32%; text-align: right;">Next</li>
+    <!-- /TMPL_IF -->
+    </ul>
+    <div style="clear:both;"></div>
+    </div>
     <div id="footer">
         <p>Powered by <a href="http://search.cpan.org/dist/CGI-Application-PhotoGallery/">CGI::Application::PhotoGallery</a></p>
     </div>
