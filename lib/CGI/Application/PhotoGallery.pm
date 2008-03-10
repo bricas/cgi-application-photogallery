@@ -163,7 +163,7 @@ use File::Find::Rule;
 use File::ShareDir;
 use HTTP::Date ();
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 =head2 setup( )
 
@@ -476,14 +476,14 @@ sub single_index {
     my ( $width, $height ) = $gfx->size( $path );
 
     # get data for prev/next/parent links
-    my( undef, $search_dir ) = fileparse( $path );
-    my( undef, $parent ) = fileparse( $photo );
+    my ( undef, $search_dir ) = fileparse( $path );
+    my ( undef, $parent )     = fileparse( $photo );
     my @files = $self->get_photos( $search_dir );
-    my( $prev, $next );
+    my ( $prev, $next );
 
-    while( my $f = shift @files ) {
+    while ( my $f = shift @files ) {
         $f =~ s{^$dir}{};
-        if( $f ne $photo ) {
+        if ( $f ne $photo ) {
             $prev = $f;
             next;
         }
@@ -493,7 +493,6 @@ sub single_index {
             last;
         }
     }
-    
 
     my $html = $self->load_tmpl(
         $self->param( 'single_template' )
