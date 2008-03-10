@@ -1,5 +1,9 @@
 Revision history for Perl extension PhotoGallery.
 
+0.11  Sun Mar 09 2008
+    - enhance navigation between pics/galleries (RT #33908)
+    - fix URI escape on photo_single.tmpl (RT #33907)
+
 0.10  Wed Feb 06 2008
     - added HTTP::Date to deps
 
