@@ -1,5 +1,9 @@
 Revision history for Perl extension PhotoGallery.
 
+0.12  Mon Mar 10 2008
+    - handle errors (not found, etc) more gracefully (RT #33907)
+    - fix warning when there is no "next" image (RT #33908)
+
 0.11  Sun Mar 09 2008
     - enhance navigation between pics/galleries (RT #33908)
     - fix URI escape on photo_single.tmpl (RT #33907)

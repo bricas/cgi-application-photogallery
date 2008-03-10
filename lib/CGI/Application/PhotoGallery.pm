@@ -163,7 +163,7 @@ use File::Find::Rule;
 use File::ShareDir;
 use HTTP::Date ();
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =head2 setup( )
 
@@ -184,6 +184,7 @@ sub setup {
         AUTOLOAD => 'gallery_index'
     );
     $self->start_mode( 'index' );
+    $self->error_mode( 'handle_error' );
 
     # setup defaults
 
@@ -312,7 +313,8 @@ sub gallery_index {
     $parent =~ s{^(.*?)/([^/]+?)/?$}{$1/};
 
     my $directory = $photo_dir . $user_dir;
-    die "'$directory' is not a directory" unless -d $directory;
+    die "ERROR: File not found." unless -e $directory;
+    die "ERROR: '$directory' is not a directory" unless -d $directory;
 
     my @dirs = sort File::Find::Rule->directory->mindepth( 1 )->maxdepth( 1 )
         ->in( $directory );
@@ -470,6 +472,7 @@ sub single_index {
     my $path  = "$dir$photo";
 
     die 'ERROR: Missing photo query argument.' unless $photo;
+    die 'ERROR: File not found' unless -e $path;
 
     my $gfx = $self->gfx_lib;
 
@@ -489,7 +492,7 @@ sub single_index {
         }
         else {
             $next = shift @files;
-            $next =~ s{^$dir}{};
+            $next =~ s{^$dir}{} if $next;
             last;
         }
     }
@@ -500,7 +503,6 @@ sub single_index {
         associate         => $self,
         global_vars       => 1,
         die_on_bad_params => 0
-
     );
 
     if ( defined( my $max_width = $self->param( 'max_width' ) ) ) {
@@ -540,6 +542,36 @@ sub single_index {
 sub _dist_file {
     my ( $self, $file ) = @_;
     return File::ShareDir::dist_file( 'CGI-Application-PhotoGallery', $file );
+}
+
+=head2 handle_error( )
+
+Renders a template for any failed action.
+
+=cut
+
+sub handle_error {
+    my( $self, $error ) = @_;
+
+    if( $error =~ m{file not found}i ) {
+        $self->header_props( { -status => '404 Not Found' } );
+        $error = 'ERROR: File not found.';
+    }
+    else {
+        $self->header_props( { -status => '500 Error' } );
+    }
+
+    my $html = $self->load_tmpl(
+        $self->param( 'error_template' )
+            || $self->_dist_file( 'error.tmpl' ),
+        associate         => $self,
+        global_vars       => 1,
+        die_on_bad_params => 0
+    );
+
+    $html->param( error => $error );
+
+    return $html->output;
 }
 
 =head1 SEE ALSO
