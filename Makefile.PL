@@ -8,7 +8,7 @@ name 'CGI-Application-PhotoGallery';
 all_from 'lib/CGI/Application/PhotoGallery.pm';
 
 requires 'File::Basename';
-requires 'CGI::Application';
+requires 'CGI::Application' => '4.0';
 requires 'Cache::FileCache';
 requires 'MIME::Types';
 requires 'File::Find::Rule';
