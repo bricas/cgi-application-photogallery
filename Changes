@@ -1,5 +1,10 @@
 Revision history for Perl extension PhotoGallery.
 
+0.13  Mon Mar 10 2008
+    [Patched by "tlhackque@yahoo.com"]
+    - make the cache functional, finally (RT #33972)
+    - skip favicon.ico on dir read (RT #33972)
+
 0.12  Mon Mar 10 2008
     - handle errors (not found, etc) more gracefully (RT #33907)
     - fix warning when there is no "next" image (RT #33908)

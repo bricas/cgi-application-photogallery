@@ -163,7 +163,7 @@ use File::Find::Rule;
 use File::ShareDir;
 use HTTP::Date ();
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 =head2 setup( )
 
@@ -226,6 +226,7 @@ sub get_photos {
     my @photos = sort File::Find::Rule->maxdepth( 1 )->file->exec(
         sub {
             my $name = pop;
+            return 0 if basename( $name ) eq 'favicon.ico';
             my $mime = $types->mimeTypeOf( $name );
             return 1 if $mime && $mime->mediaType eq 'image';
         }
@@ -313,7 +314,7 @@ sub gallery_index {
     $parent =~ s{^(.*?)/([^/]+?)/?$}{$1/};
 
     my $directory = $photo_dir . $user_dir;
-    die "ERROR: File not found." unless -e $directory;
+    die "ERROR: File not found."                 unless -e $directory;
     die "ERROR: '$directory' is not a directory" unless -d $directory;
 
     my @dirs = sort File::Find::Rule->directory->mindepth( 1 )->maxdepth( 1 )
@@ -386,9 +387,7 @@ sub thumbnail {
         my $reqmod;
         if ( my $header = $query->http( 'If-Modified-Since' ) ) {
             $reqmod
-                = HTTP::Date::str2time(
-                ( split( /;/, $query->http( 'If-Modified-Since' ), 2 ) )[ 0 ]
-                );
+                = HTTP::Date::str2time( ( split( /;/, $header, 2 ) )[ 0 ] );
         }
 
         if ( $reqmod && $reqmod == $lastmod ) {
@@ -408,7 +407,7 @@ sub thumbnail {
 
     $self->header_props(
         {   -type          => $self->mime_types->mimeTypeOf( $path ),
-            -last_modified => $lastmod
+            -last_modified => HTTP::Date::time2str( $lastmod )
         }
     );
 
@@ -435,8 +434,7 @@ sub show_image {
 
     my $reqmod;
     if ( my $header = $query->http( 'If-Modified-Since' ) ) {
-        $reqmod = HTTP::Date::str2time(
-            ( split( /;/, $query->http( 'If-Modified-Since' ), 2 ) )[ 0 ] );
+        $reqmod = HTTP::Date::str2time( ( split( /;/, $header, 2 ) )[ 0 ] );
     }
 
     if ( $reqmod && $reqmod == $lastmod ) {
@@ -551,9 +549,9 @@ Renders a template for any failed action.
 =cut
 
 sub handle_error {
-    my( $self, $error ) = @_;
+    my ( $self, $error ) = @_;
 
-    if( $error =~ m{file not found}i ) {
+    if ( $error =~ m{file not found}i ) {
         $self->header_props( { -status => '404 Not Found' } );
         $error = 'ERROR: File not found.';
     }
@@ -562,8 +560,7 @@ sub handle_error {
     }
 
     my $html = $self->load_tmpl(
-        $self->param( 'error_template' )
-            || $self->_dist_file( 'error.tmpl' ),
+        $self->param( 'error_template' ) || $self->_dist_file( 'error.tmpl' ),
         associate         => $self,
         global_vars       => 1,
         die_on_bad_params => 0
