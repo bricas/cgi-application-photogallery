@@ -138,6 +138,29 @@ particular width and proportioned height. This is done by setting the width
 and height attributes on the image tag, thus saving the image will retain the
 full resolution.
 
+=head2 cache_root
+
+Specifies where the file cache data will be stored.  Defaults to FileCache
+under the OS-specific temporary filesdirectory (e.g. /tmp/FileCache).  You
+may want to move this to make the cache persist.  Under selinux, however,
+be careful to put it in a webserver-writable directory.
+
+=head2 cache_namespace
+
+Specifies the namespace for this gallery's cache data.  Defaults to the
+gallery title - or 'default'.  Changing this will orphan the cache data.
+
+=head2 cache_dirumask
+
+Specifies the umask value to use when cache directories are created.  Defaults
+to 0007 to avoid cache poisioning attacks.
+
+=head2 cache_datumask
+
+Specifies the umask value to use when cache data is written.  Defaults to 006
+to avoid cache poisioning attacks.  Note that this becomes the umask for all
+files written by this script.  (See Cache::FileCache documentation for why.)
+
 =head1 CAPTIONS
 
 You can include captions for your photos by creating a tab-separated
@@ -283,8 +306,22 @@ sub cache {
     my $self = shift;
 
     unless ( $self->{ _cache } ) {
-        $self->{ _cache } = Cache::FileCache->new(
-            { namespace => $self->param( 'title' ) } );
+        my %options = ( namespace => $self->param( 'title' ),
+            directory_umask => 0007 );
+
+        $options{ 'cache_root' } = $self->param( 'cache_root' )
+            if defined $self->param( 'cache_root' );
+        $options{ 'namespace' } = $self->param( 'cache_namespace' )
+            if defined $self->param( 'cache_namespace' );
+        $options{ 'directory_umask' } = $self->param( 'cache_dirumask' )
+            if defined $self->param( 'cache_dirumask' );
+        if ( defined $self->param( 'cache_datumask' ) ) {
+            umask $self->param( 'cache_datumask' );
+        }
+        else {
+            umask 006;
+        }
+        $self->{ _cache } = Cache::FileCache->new( \%options );
     }
 
     return $self->{ _cache };
@@ -302,6 +339,7 @@ Reads in the contents of your C<photos_dir> and generates an index of photos.
 sub gallery_index {
     my $self  = shift;
     my $types = $self->mime_types;
+    my $query = $self->query;
 
     my $limit     = $self->param( 'preview_thumbs' );
     my $photo_dir = $self->param( 'photos_dir' );
@@ -316,6 +354,32 @@ sub gallery_index {
     my $directory = $photo_dir . $user_dir;
     die "ERROR: File not found."                 unless -e $directory;
     die "ERROR: '$directory' is not a directory" unless -d $directory;
+
+    my $output;
+    my $cache   = $self->cache;
+    my $key     = $directory;
+    my $lastmod = ( stat( $directory ) )[ 9 ];
+    my $cstamp  = "$directory/.cachetime";
+
+    if ( $output = $cache->get( $key ) ) {
+        my $cachetime = $cache->get( $cstamp );
+        if ( $cachetime && $cachetime == $lastmod ) {
+            my $reqmod;
+            if ( my $header = $query->http( 'If-Modified-Since' ) ) {
+                $reqmod = HTTP::Date::str2time(
+                    ( split( /;/, $header, 2 ) )[ 0 ] );
+
+                if ( $reqmod && $reqmod == $lastmod ) {
+                    $self->header_props( { -status => '304 Not Modified' } );
+                    return;
+                }
+            }
+
+            $self->header_add(
+                { -last_modified => HTTP::Date::time2str( $lastmod ) } );
+            return $output;
+        }
+    }
 
     my @dirs = sort File::Find::Rule->directory->mindepth( 1 )->maxdepth( 1 )
         ->in( $directory );
@@ -358,7 +422,13 @@ sub gallery_index {
         parent    => $parent,
     );
 
-    return $html->output;
+    $self->header_add(
+        { -last_modified => HTTP::Date::time2str( $lastmod ) } );
+    $output = $html->output;
+    $cache->set( $key    => $output );
+    $cache->set( $cstamp => $lastmod );
+
+    return $output;
 }
 
 =head2 thumbnail( )
@@ -472,6 +542,42 @@ sub single_index {
     die 'ERROR: Missing photo query argument.' unless $photo;
     die 'ERROR: File not found' unless -e $path;
 
+    my $caption_path = "$dir/captions.txt";
+
+    my $output;
+    my $cache   = $self->cache;
+    my $key     = "$path.#frame";
+    my $lastmod = ( stat( $path ) )[ 9 ];
+
+    # Directory change means links may have changed
+    # Caption file change is a content change
+    my $lastdir = ( stat( $dir ) )[ 9 ];
+    $lastmod = $lastdir if ( $lastdir > $lastmod );
+    my $lastcap = 0;
+    $lastcap = ( stat( $caption_path ) )[ 9 ] if ( -r $caption_path );
+    $lastmod = $lastcap if ( $lastcap > $lastmod );
+    my $cstamp = "$key#cachetime";
+
+    if ( $output = $cache->get( $key ) ) {
+        my $cachetime = $cache->get( $cstamp );
+        if ( $cachetime && $cachetime == $lastmod ) {
+            my $reqmod;
+            if ( my $header = $query->http( 'If-Modified-Since' ) ) {
+                $reqmod = HTTP::Date::str2time(
+                    ( split( /;/, $header, 2 ) )[ 0 ] );
+
+                if ( $reqmod && $reqmod == $lastmod ) {
+                    $self->header_props( { -status => '304 Not Modified' } );
+                    return;
+                }
+            }
+
+            $self->header_add(
+                { -last_modified => HTTP::Date::time2str( $lastmod ) } );
+            return $output;
+        }
+    }
+
     my $gfx = $self->gfx_lib;
 
     my ( $width, $height ) = $gfx->size( $path );
@@ -521,10 +627,9 @@ sub single_index {
     );
 
     # get caption, if available
-    my $caption_path = "$dir/captions.txt";
     if ( -e $caption_path ) {
         open( CAPTIONS, $caption_path )
-            or die "ERROR: Cannot open $caption_path: $!";
+            or die "ERROR: Cannot open caption file $caption_path: $!";
         while ( my $caption = <CAPTIONS> ) {
             if ( $caption =~ /^\Q$photo\E\t(.+)$/ ) {
                 $html->param( caption => $1 );
@@ -534,7 +639,13 @@ sub single_index {
         close( CAPTIONS );
     }
 
-    return $html->output;
+    $self->header_add(
+        { -last_modified => HTTP::Date::time2str( $lastmod ) } );
+    $output = $html->output;
+    $cache->set( $key    => $output );
+    $cache->set( $cstamp => $lastmod );
+
+    return $output;
 }
 
 sub _dist_file {

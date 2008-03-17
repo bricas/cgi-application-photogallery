@@ -1,7 +1,8 @@
 Revision history for Perl extension PhotoGallery.
 
-0.14 xxx
+0.14  Mon Mar 17 2008
     - added Imager adaptor
+    - caching configurability + fixes (tlhackque@yahoo.com, RT#33993)
 
 0.13  Mon Mar 10 2008
     [Patched by "tlhackque@yahoo.com"]
