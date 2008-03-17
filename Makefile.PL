@@ -25,6 +25,10 @@ feature 'Image::Magick Support',
     -default => 0,
     'Image::Magick';
 
+feature 'Imager Support',
+    -default => 0,
+    'Imager';
+
 auto_install;
 install_share;
 WriteAll;
