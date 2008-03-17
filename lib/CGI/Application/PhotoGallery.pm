@@ -163,7 +163,7 @@ use File::Find::Rule;
 use File::ShareDir;
 use HTTP::Date ();
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 =head2 setup( )
 
