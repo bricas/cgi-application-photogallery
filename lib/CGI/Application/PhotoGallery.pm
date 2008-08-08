@@ -679,14 +679,13 @@ Renders a template for any failed action.
 sub handle_error {
     my ( $self, $error ) = @_;
 
-    # send errors to the log
-    warn $error;
-
     if ( $error =~ m{file not found}i ) {
         $self->header_props( { -status => '404 Not Found' } );
         $error = 'ERROR: File not found.';
     }
     else {
+        # log non-404 errors
+        warn $error;
         $error =~ s{\n}{<br/>}g;
         $self->header_props( { -status => '500 Error' } );
     }
