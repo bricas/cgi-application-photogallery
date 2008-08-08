@@ -1,9 +1,10 @@
-use inc::Module::Install 0.68;
+use inc::Module::Install 0.76;
 
 if ( -e 'MANIFEST.SKIP' ) {
     system( 'pod2text lib/CGI/Application/PhotoGallery.pm > README' );
 }
 
+perl_version '5.006';
 name 'CGI-Application-PhotoGallery';
 all_from 'lib/CGI/Application/PhotoGallery.pm';
 
@@ -29,6 +30,6 @@ feature 'Imager Support',
     -default => 0,
     'Imager';
 
-auto_install;
 install_share;
+auto_install;
 WriteAll;
