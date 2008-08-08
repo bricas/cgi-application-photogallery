@@ -138,6 +138,13 @@ particular width and proportioned height. This is done by setting the width
 and height attributes on the image tag, thus saving the image will retain the
 full resolution.
 
+=head2 max_height
+
+Setting this value will force the browser to scale images down to this
+particular height and proportioned width. This is done by setting the width
+and height attributes on the image tag, thus saving the image will retain the
+full resolution.
+
 =head2 cache_root
 
 Specifies where the file cache data will be stored.  Defaults to FileCache
@@ -580,7 +587,9 @@ sub single_index {
 
     my $gfx = $self->gfx_lib;
 
-    my ( $width, $height ) = $gfx->size( $path );
+    my ( $width, $height ) = eval { $gfx->size( $path ); };
+
+    die "Unable to determine size of $path; file may be corrupt.\nError string: $@" if $@;
 
     # get data for prev/next/parent links
     my ( undef, $search_dir ) = fileparse( $path );
@@ -612,6 +621,14 @@ sub single_index {
     if ( defined( my $max_width = $self->param( 'max_width' ) ) ) {
         if ( $width > $max_width ) {
             my $scale = $max_width / $width;
+            $width  = int( $width * $scale );
+            $height = int( $height * $scale );
+        }
+    }
+
+    if ( defined( my $max_height = $self->param( 'max_height' ) ) ) {
+        if ( $height > $max_height ) {
+            my $scale = $max_height / $height;
             $width  = int( $width * $scale );
             $height = int( $height * $scale );
         }
@@ -662,11 +679,15 @@ Renders a template for any failed action.
 sub handle_error {
     my ( $self, $error ) = @_;
 
+    # send errors to the log
+    warn $error;
+
     if ( $error =~ m{file not found}i ) {
         $self->header_props( { -status => '404 Not Found' } );
         $error = 'ERROR: File not found.';
     }
     else {
+        $error =~ s{\n}{<br/>}g;
         $self->header_props( { -status => '500 Error' } );
     }
 

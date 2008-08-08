@@ -1,5 +1,8 @@
 Revision history for Perl extension PhotoGallery.
 
+0.XX  XXX
+    - added max_height to match max_width (tlhackque@yahoo.com)
+
 0.14  Mon Mar 17 2008
     - added Imager adaptor
     - caching configurability + fixes (tlhackque@yahoo.com, RT#33993)
