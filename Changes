@@ -1,6 +1,6 @@
 Revision history for Perl extension PhotoGallery.
 
-0.XX  XXX
+0.15  XXX
     - added max_height to match max_width (tlhackque@yahoo.com)
 
 0.14  Mon Mar 17 2008
