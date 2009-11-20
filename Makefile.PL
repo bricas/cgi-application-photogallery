@@ -31,5 +31,7 @@ feature 'Imager Support',
     'Imager';
 
 install_share;
-auto_install;
+
+repository 'http://github.com/bricas/cgi-application-photogallery/tree/master';
+
 WriteAll;
