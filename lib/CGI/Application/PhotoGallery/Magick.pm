@@ -49,6 +49,11 @@ sub resize {
     my $image = $self->load( $file );
 
     $image->Scale( Geometry => $size . "x$size" );
+    $image->Extent(
+        Geometry   => $size . "x$size",
+        gravity    => 'center',
+        background => 'none'
+    );
 
     return $image->ImageToBlob( magick => 'png' );
 }
