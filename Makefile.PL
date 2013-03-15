@@ -1,4 +1,4 @@
-use inc::Module::Install 0.91;
+use inc::Module::Install 1.00;
 
 if ( -e 'MANIFEST.SKIP' ) {
     system( 'pod2text lib/CGI/Application/PhotoGallery.pm > README' );
@@ -32,6 +32,6 @@ feature 'Imager Support',
 
 install_share;
 
-repository 'http://github.com/bricas/cgi-application-photogallery/tree/master';
+repository 'http://github.com/bricas/cgi-application-photogallery';
 
 WriteAll;

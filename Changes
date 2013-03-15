@@ -1,5 +1,8 @@
 Revision history for Perl extension PhotoGallery.
 
+0.16  Fri Mar 15 2013
+    - fix Image::Magick thumbnails (Adam Bernard)
+
 0.15  Fri Nov 20 2009
     - added max_height to match max_width (tlhackque@yahoo.com)
 
